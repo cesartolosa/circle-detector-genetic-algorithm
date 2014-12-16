@@ -30,6 +30,7 @@ angular.module('circleDetectorApp', ['ui.bootstrap', 'ui.bootstrap-slider'])
         $scope.mutationFactor = 0.01;
         $scope.bestGenotypes = [];
         $scope.processing = false;
+        $scope.alerts = [];
 
         function setPopulation(newPupolation) {
             population = newPupolation;
@@ -58,6 +59,7 @@ angular.module('circleDetectorApp', ['ui.bootstrap', 'ui.bootstrap-slider'])
             $scope.showConfig = false;
             $scope.processing = true;
             $scope.bestGenotypes = [];
+            $scope.alerts = [];
             clearCanvas();
             population = [];
             fill(population, $scope.populationSize);
@@ -71,6 +73,12 @@ angular.module('circleDetectorApp', ['ui.bootstrap', 'ui.bootstrap-slider'])
                 if (currentGeneration > $scope.generations) {
                     $scope.bestGenotypes.reverse();
                     $scope.drawCircle(getBestGenotype(population));
+                    if ($scope.alerts.length === 0) {
+                        $scope.alerts.push({
+                            type: 'danger',
+                            message: 'Círculo aproximado en: ' + $scope.generations + ' generaciones'
+                        });
+                    };
                     $scope.processing = false;
                     $scope.$apply();
                 } else {
@@ -79,7 +87,10 @@ angular.module('circleDetectorApp', ['ui.bootstrap', 'ui.bootstrap-slider'])
                     if (_.find($scope.bestGenotypes, bestGenotype) === undefined) {
                         $scope.bestGenotypes.push(bestGenotype);
                         if (bestGenotype.fitness === 1) {
-                            $scope.message = 'Encontrado en: ' + $scope.currentGeneration + ' generaciones!!!';
+                            $scope.alerts.push({
+                                type: 'success',
+                                message: 'Círculo detectado en: ' + $scope.currentGeneration + ' generaciones!!!'
+                            });
                             $scope.$digest();
                             $scope.drawCircle(bestGenotype);
                             evol($scope.generations + 1);
@@ -282,14 +293,17 @@ angular.module('circleDetectorApp', ['ui.bootstrap', 'ui.bootstrap-slider'])
             $scope.loading = true;
             bestGenotypes = [];
             clearCanvas();
-            $scope.selectedImage = path;
-            setTimeout(function() {
-                if (path !== image.src) {
+            if ($scope.selectedImage !== path) {
+                $scope.selectedImage = path;
+                setTimeout(function() {
                     image.src = path;
-                } else {
+                }, 500);
+            } else {
+                setTimeout(function() {
                     $scope.loading = false;
-                }
-            }, 500);
+                    $scope.$digest();
+                }, 500);
+            }
         };
 
         function getCanvas(width, height, id) {

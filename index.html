@@ -42,48 +42,49 @@
         </nav>
         <div class="config-dialog" ng-show="showConfig">
             <div class="option">
-                <h4><i class="fa fa-refresh"></i> Generaciones <span class="badge pull.right">{{ generations }}</span></h4>
-                <slider ng-model="generations" min="50" step="50" max="1000" ng-value="generations"></slider>
+                <h4><i class="fa fa-refresh"></i> Generaciones <span class="badge pull-right">{{ generations }}</span></h4>
+                <slider ng-model="generations" min="0" step="50" max="500" ng-value="generations"></slider>
             </div>
             <div class="option">
-                <h4><i class="fa fa-users"></i> Población <span class="badge pull.right">{{ populationSize }}</span></h4>
-                <slider ng-model="populationSize" min="50" step="50" max="1000" ng-value="populationSize"></slider>
+                <h4><i class="fa fa-users"></i> Población <span class="badge pull-right">{{ populationSize }}</span></h4>
+                <slider ng-model="populationSize" min="0" step="50" max="500" ng-value="populationSize"></slider>
             </div>
             <div class="option">
-                <h4><i class="fa fa-exchange"></i> Factor de cruza <span class="badge pull.right">{{ crossoverFactor }}</span></h4>
-                <slider ng-model="crossoverFactor" min="0.5" step="0.1" max="1" ng-value="crossoverFactor"></slider>
+                <h4><i class="fa fa-exchange"></i> Factor cruza <span class="badge pull-right">{{ crossoverFactor }}</span></h4>
+                <slider ng-model="crossoverFactor" min="0" step="0.1" max="1" ng-value="crossoverFactor"></slider>
             </div>
             <div class="option">
-                <h4><i class="fa fa-bolt"></i> Factor de mutación <span class="badge pull.right">{{ mutationFactor }}</span></h4>
-                <slider ng-model="mutationFactor" min="0.01" step="0.01" max="0.1" ng-value="mutationFactor"></slider>
+                <h4><i class="fa fa-bolt"></i> Factor mutación <span class="badge pull-right">{{ mutationFactor }}</span></h4>
+                <slider ng-model="mutationFactor" min="0" step="0.01" max="0.05" ng-value="mutationFactor"></slider>
             </div>
         </div>
     </header>
     <div class="container">
         <section class="row">
-            <article class="col-sm-8 relative">
-                <figure id="image">
-                    <div class="loader" ng-show="loading">
-                        <i class="fa fa-spin fa-spinner fa-4x"></i>
-                        <h2>Cargando imagen...</h2>
+            <div class="col-sm-8 relative">
+                <div class="row">
+                    <article class="col-sm-12">
+                        <figure id="image">
+                            <h4>{{ selectedImage }}</h4>
+                            <div class="loader" ng-show="loading">
+                                <i class="fa fa-spin fa-spinner fa-4x"></i>
+                                <h2>Cargando imagen...</h2>
+                            </div>
+                            <div class="no-image" ng-hide="selectedImage">
+                                <i class="fa fa-picture-o fa-5x"></i>
+                                <h2>Seleccione una imagen</h2>
+                            </div>
+                            <canvas id="image-canvas" ng-class="{canvas: !selectedImage}"></canvas>
+                            <canvas id="circle-canvas" class="canvas"></canvas>
+                        </figure>
+                    </article>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.message}}</alert>
                     </div>
-                    <div class="no-image" ng-hide="selectedImage">
-                        <i class="fa fa-picture-o fa-5x"></i>
-                        <h2>Seleccione una imagen</h2>
-                    </div>
-                    <canvas id="image-canvas" ng-class="{canvas: !selectedImage}"></canvas>
-                    <canvas id="circle-canvas" class="canvas"></canvas>
-                </figure>
-                <!--div class="btn-group btn-images" ng-show="selectedImage" dropdown>
-                    <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
-                        <i class="fa fa-picture-o"></i><span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li ng-repeat="image in images" ng-click="setImageSrc(image.path)"><a>{{ image.path }}</a>
-                        </li>
-                    </ul>
-                </div-->
-            </article>
+                </div>
+            </div>
             <article class="col-sm-3 col-sm-offset-1 results-container">
                 <div class="results">
                     <div class="loader" ng-show="processing">
@@ -100,11 +101,9 @@
                             <li class="media" ng-repeat="genotype in bestGenotypes" ng-click="drawCircle(genotype)">
                                 <a class="media-left"><i class="fa fa-4x" ng-class="{ 'fa-trophy': genotype.fitness === 1, 'fa-smile-o': genotype.fitness < 1 && genotype.fitness > 0.7 , 'fa-frown-o': genotype.fitness < 0.7 }"></i></a>
                                 <div class="media-body text-left">
-                                    <i class="fa fa-crosshairs fa-fw"></i> 
-                                    ({{genotype.x}}, {{genotype.y}}) 
+                                    <i class="fa fa-crosshairs fa-fw"></i> ({{genotype.x}}, {{genotype.y}})
                                     <br>
-                                    <i class="fa fa-circle-o fa-fw"></i>
-                                    {{genotype.radius}}
+                                    <i class="fa fa-circle-o fa-fw"></i> {{genotype.radius}}
                                     <br>
                                     <i class="fa fa-calculator fa-fw"></i>{{genotype.fitness}}
                                 </div>
@@ -114,9 +113,6 @@
                 </div>
             </article>
         </section>
-
-        {{ currentDimentions.width}} x {{currentDimentions.height}}
-        {{ message }}
     </div>
 
     <script src="js/lib/jquery-1.11.1.min.js"></script>
